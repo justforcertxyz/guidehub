@@ -4,6 +4,7 @@ from django.conf import settings
 from .models import Blog
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
+from django.urls import reverse
 
 
 class BlogModelTest(TestCase):
@@ -40,3 +41,19 @@ class BlogModelTest(TestCase):
 
         self.assertEqual(blog.template_path(),
                          f"blog/entries/{self.html_file_name}")
+
+
+class IndexPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.index_url = reverse('blog:index')
+
+    def test_index_page_returns_correct_response(self):
+        response = self.client.get(self.index_url)
+        self.assertTemplateUsed(response, 'blog/index.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_page_returns_corrent_content(self):
+        response = self.client.get(self.index_url)
+        self.assertContains(response, "<title>Blog")

@@ -1,0 +1,17 @@
+{% extends "landing/base.html" %}
+
+{% block title %}Blog{% endblock %}
+
+{% block content %}
+
+<h1>Alle Blog-Einträge</h1>
+
+<ul>
+    {% for entry in object_list %}
+        <li><a href="#">{{ entry.pub_date|date }} - {{ entry }}</a></li>
+    {% empty %}
+        <li>Noch keine Einträge.</li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}
