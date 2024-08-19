@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     'landing',
     'blog',
+    'guide',
 
     'taggit',
 ]
