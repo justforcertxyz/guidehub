@@ -38,4 +38,5 @@ class BlogModelTest(TestCase):
                                    html_file=html_file,
                                    )
 
-        self.assertEqual(blog.template_path(), f"blog/entries/{self.html_file_name}")
+        self.assertEqual(blog.template_path(),
+                         f"blog/entries/{self.html_file_name}")
