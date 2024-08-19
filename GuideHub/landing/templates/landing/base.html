@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'landing/style.css' %}">
+    {% block css %}{% endblock %}
+    <title>{% block title %}{% endblock %} - GuideHub</title> 
+</head>
+
+<body>
+    <header class="header">
+        <a href="{% url 'landing:index' %}" class="logo">GuideHub</a>
+
+        <nav class="navbar">
+            <a href="#">Guides</a>
+            <a href="#">Blog</a>
+            {% if user.is_authenticated %}
+            <a href="#">Dashboard</a>
+            <a href="#">Abmelden</a>
+            {% else %}
+            <a href="#">Anmelden</a>
+            <a href="#">Registrieren</a>
+            {% endif %}
+        </nav>
+    </header>    
+
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <div class="foot-container">
+            <div class="footer-item">
+                <h2>GuideHub</h2>
+                <a href="{% url 'landing:index' %}">Home</a>
+                <a href="#">Kontakt</a>
+                <a href="#">Impressum</a>
+                <a href="#">Datenschutzerklärung</a>
+            </div>
+            <div class="footer-item">
+                <h2>Nutzer</h2>
+                <a href="#">Guides</a>
+                <a href="#">Blog</a>
+                {% if user.is_authenticated %}
+                    <a href="#">Dashboard</a>
+                    <a href="#">Abmelden</a>
+                {% else %}
+                    <a href="#">Anmelden</a>
+                    <a href="#">Registrieren</a>
+                {% endif %}
+            </div>
+            <div class="footer-item">
+                <h2>Anderes</h2>
+                <a href="#">Github</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
