@@ -4,9 +4,6 @@ fixtures/
 staticroot/
 
 # HTML Tests
-test*.html
-en_doc.html
-de_doc.html
 
 # Python Cache etc.
 *.pyc
