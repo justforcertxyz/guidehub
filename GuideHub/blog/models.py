@@ -15,3 +15,6 @@ class Blog(models.Model):
 
     def __str__(self):
         return self.title
+
+    def template_path(self):
+        return self.html_file.name.split("templates/")[1]
