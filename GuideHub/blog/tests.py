@@ -57,3 +57,40 @@ class IndexPageTest(TestCase):
     def test_index_page_returns_corrent_content(self):
         response = self.client.get(self.index_url)
         self.assertContains(response, "<title>Blog")
+
+
+class DetailPageTest(TestCase):
+    def setUp(self):
+        self.html_file_name = "test.html"
+        self.client = Client()
+        self.html_file = SimpleUploadedFile(name=self.html_file_name,
+                                            content=b"<h1>This is some HTML</h1><p>Here is some pragraph</p>",
+                                            content_type="text/html"
+                                            )
+
+        self.blog = Blog.objects.create(title="Some Title",
+                                        slug="some_slug",
+                                        html_file=self.html_file,
+                                        )
+
+        self.detail_url = reverse('blog:detail', kwargs={
+                                  'slug': self.blog.slug})
+
+    def tearDown(self):
+        folder = f"{settings.BASE_DIR}/blog/templates/blog/entries"
+        file = f"{
+            settings.BASE_DIR}/blog/templates/blog/entries/{self.html_file_name}"
+        os.system(f"test -f {file} && rm {file}")
+
+    def test_index_page_returns_correct_response(self):
+        response = self.client.get(self.detail_url)
+        self.assertTemplateUsed(response, 'blog/detail.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertTemplateUsed(response, f'blog/entries/{self.html_file_name}')
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_page_returns_corrent_content(self):
+        response = self.client.get(self.detail_url)
+        self.assertContains(response, f"<title>{self.blog.title}")
+        self.assertContains(
+            response, '<h1>This is some HTML</h1><p>Here is some pragraph</p>')
