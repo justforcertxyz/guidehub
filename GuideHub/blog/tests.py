@@ -77,7 +77,6 @@ class DetailPageTest(TestCase):
                                   'slug': self.blog.slug})
 
     def tearDown(self):
-        folder = f"{settings.BASE_DIR}/blog/templates/blog/entries"
         file = f"{
             settings.BASE_DIR}/blog/templates/blog/entries/{self.html_file_name}"
         os.system(f"test -f {file} && rm {file}")
