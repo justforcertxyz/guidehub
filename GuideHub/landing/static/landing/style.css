@@ -83,6 +83,29 @@ body {
 
 /* Content */ 
 
+.content {
+    padding: 0 1em;
+    margin: 0 auto;
+    margin-top: 8em;;
+    max-width: 60rem;
+    font-size: 1.15rem;
+}
+
+.page-item {
+    border-top: dotted;
+    margin-bottom: 2.25rem;
+}
+
+.page-item a {
+    text-decoration: none;
+    color: seagreen;
+    transition: .3s;
+}
+
+.page-item a:hover {
+    color: red;
+}
+
 
 /* Footer */
 
