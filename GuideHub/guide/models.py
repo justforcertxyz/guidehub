@@ -26,6 +26,7 @@ class Guide(models.Model):
     owned_by = models.ManyToManyField(
         User, verbose_name="Owned By", blank=True, related_name="owned_by")
 
+    language = models.CharField("Language", max_length=7, default="deutsch")
     tags = TaggableManager(blank=True)
 
     def __str__(self):
