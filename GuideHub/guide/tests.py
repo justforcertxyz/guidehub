@@ -151,3 +151,30 @@ class IndexPageTest(TestCase):
     def test_index_page_returns_corrent_content(self):
         response = self.client.get(self.index_url)
         self.assertContains(response, "<title>Guides")
+
+
+class DetailPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.pdf_file_name = "test_guide.pdf"
+        self.pdf = SimpleUploadedFile(
+            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+
+        file = f"{
+            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
+        os.system(f"test -f {file} && rm {file}")
+
+        self.guide = create_guide(title="Some Guide", guide_pdf=self.pdf)
+        self.detail_url = reverse('guide:detail', kwargs={
+                                  'slug': self.guide.slug})
+
+    def tearDown(self):
+        file = f"{
+            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
+        os.system(f"test -f {file} && rm {file}")
+
+    def test_index_page_returns_correct_response(self):
+        response = self.client.get(self.detail_url)
+        self.assertTemplateUsed(response, 'guide/detail.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
