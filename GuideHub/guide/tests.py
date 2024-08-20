@@ -1,10 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import Guide
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 import os
 from django.utils import timezone
+from django.urls import reverse
 
 User = get_user_model()
 
@@ -134,3 +135,19 @@ class GuideModelTest(TestCase):
         self.assertEqual(len(guide.price_history), 2)
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertTrue(f'{new_price}' in guide.price_history[1])
+
+
+class IndexPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.index_url = reverse('guide:index')
+
+    def test_index_page_returns_correct_response(self):
+        response = self.client.get(self.index_url)
+        self.assertTemplateUsed(response, 'guide/index.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_index_page_returns_corrent_content(self):
+        response = self.client.get(self.index_url)
+        self.assertContains(response, "<title>Guides")

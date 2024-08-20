@@ -1,0 +1,18 @@
+{% extends "landing/base.html" %}
+
+{% block title %}Guides{% endblock %}
+
+
+{% block content %}
+
+<h1>Alle Guides</h1>
+
+<ul>
+    {% for guide in object_list %}
+        <li>{{ guide.pub_date|date }} - {{ guide }}</li>
+    {% empty %}
+        <li>Noch keine Einträge.</li>
+    {% endfor %}
+</ul>
+
+{% endblock content %}
