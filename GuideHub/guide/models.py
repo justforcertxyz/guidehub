@@ -1,8 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from taggit.managers import TaggableManager
-from django.core.validators import MaxValueValidator, MinValueValidator, FileExtensionValidator
-
+from django.core.validators import FileExtensionValidator
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
