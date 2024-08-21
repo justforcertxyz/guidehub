@@ -13,8 +13,8 @@
         <a href="{% url 'landing:index' %}" class="logo">GuideHub</a>
 
         <nav class="navbar">
-            <a href="#">Guides</a>
-            <a href="#">Blog</a>
+            <a href="{% url 'guide:index' %}">Guides</a>
+            <a href="{% url 'blog:index' %}">Blog</a>
             {% if user.is_authenticated %}
             <a href="#">Dashboard</a>
             <a href="#">Abmelden</a>
@@ -40,8 +40,8 @@
             </div>
             <div class="footer-item">
                 <h2>Nutzer</h2>
-                <a href="#">Guides</a>
-                <a href="#">Blog</a>
+                <a href="{% url 'guide:index' %}">Guides</a>
+                <a href="{% url 'blog:index' %}">Blog</a>
                 {% if user.is_authenticated %}
                     <a href="#">Dashboard</a>
                     <a href="#">Abmelden</a>
