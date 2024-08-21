@@ -33,3 +33,18 @@ class PrivacyPolicyPageTest(TestCase):
     def test_privacy_policy_page_returns_corrent_content(self):
         response = self.client.get(self.privacy_policy_url)
         self.assertContains(response, "<title>Datenschutzerklärung")
+
+class ImprintPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.imprint_url = reverse('landing:imprint')
+
+    def test_imprint_page_returns_correct_response(self):
+        response = self.client.get(self.imprint_url)
+        self.assertTemplateUsed(response, 'landing/imprint.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_imprint_page_returns_corrent_content(self):
+        response = self.client.get(self.imprint_url)
+        self.assertContains(response, "<title>Impressum")
