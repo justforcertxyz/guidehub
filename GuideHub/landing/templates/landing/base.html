@@ -19,7 +19,7 @@
             <a href="#">Dashboard</a>
             <a href="#">Abmelden</a>
             {% else %}
-            <a href="#">Anmelden</a>
+            <a href="{% url 'landing:login' %}">Anmelden</a>
             <a href="#">Registrieren</a>
             {% endif %}
         </nav>
@@ -46,7 +46,7 @@
                     <a href="#">Dashboard</a>
                     <a href="#">Abmelden</a>
                 {% else %}
-                    <a href="#">Anmelden</a>
+                    <a href="{% url 'landing:login' %}">Anmelden</a>
                     <a href="#">Registrieren</a>
                 {% endif %}
             </div>
