@@ -1,9 +1,52 @@
 {% extends "landing/base.html" %}
 
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'guide/guide.css' %}">
+{% endblock %}
+
 {% block title %}{{ object }}{% endblock %}
 
 {% block content %}
+    <h1>{{ object }}</h1>
+    <h3>Geschrieben von {{ object.author }}</h3>
 
-<h1>{{ object }}</h1>
-
+    <div class="guide-container">
+        <div class="guide-description">
+            <div class="guide-description-text">
+                {{ guide.description }}
+            </div>
+        </div>
+        <div class="guide-info">
+            <div class="guide-info-thumb">
+                <img src="{{ object.thumbnail.url }}" alt="Thumbnail">
+            </div>
+            <div class="guide-info-misc">
+                <div class="guide-info-misc-row">
+                    <div class="guide-info-misc-item">
+                        {{ object.pub_date|date }}
+                    </div>
+                    <div class="guide-info-misc-item">
+                        {{ object.language }}
+                    </div>
+                </div>
+                <div class="guide-info-misc-row">
+                    <div class="guide-info-misc-item">
+                        {{ object.current_price }}€ ink. MwSt.
+                    </div>
+                    <div class="guide-info-misc-item">
+                        {{ object.pages }} Seit{{ object.pages|pluralize:'e,en' }}
+                    </div>
+                </div>
+                <div class="guide-info-misc-row-link">
+                    <div class="guide-info-misc-item">
+                        <a href="#">Kaufen</a>
+                    </div>
+                    <div class="guide-info-misc-item">
+                        <a href="#">Download</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock content %}

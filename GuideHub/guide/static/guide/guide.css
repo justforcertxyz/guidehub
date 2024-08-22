@@ -4,8 +4,40 @@
     justify-content: space-between;
 }
 
-
 .guide-info {
     display: flex;
     flex-direction: column;
+    max-width: 30rem;
+    min-width: 20rem;
+    margin-left: 2rem;
+}
+
+.guide-info-thumb img {
+    width: 100%;
+}
+
+.guide-info-misc-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 0.25rem;
+}
+
+.guide-info-misc-item a {
+    font-family: 'zain';
+    text-decoration: none;
+    color: seagreen;
+    transition: .3s;
+}
+
+.guide-info-misc-item a:hover {
+    color: red;
+}
+
+.guide-info-misc-row-link {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 0.5rem;
+    font-size: 1.75rem;
 }
