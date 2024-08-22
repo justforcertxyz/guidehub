@@ -6,6 +6,7 @@ from django.conf import settings
 import os
 from django.utils import timezone
 from django.urls import reverse
+from unittest import skip
 
 User = get_user_model()
 
@@ -26,19 +27,21 @@ def create_guide(title, slug="slug", description="description", price=0, pages=1
                               )
 
 
+def delete_file(file_name):
+    file = f"{
+        settings.MEDIA_ROOT}/doc/{file_name}"
+    os.system(f"test -f {file} && rm {file}")
+
+
 class GuideModelTest(TestCase):
     def setUp(self):
         self.pdf_file_name = "test_guide.pdf"
         self.pdf = SimpleUploadedFile(
             name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
-        file = f"{
-            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.pdf_file_name)
 
     def tearDown(self):
-        file = f"{
-            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.pdf_file_name)
 
     def test_guide_model_exists(self):
         guide_count = Guide.objects.count()
@@ -72,7 +75,7 @@ class GuideModelTest(TestCase):
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertEqual(guide.author, author)
         self.assertEqual(guide.guide_pdf.size, self.pdf.size)
-        self.assertEqual(guide.guide_pdf.name, f"guide/doc/{self.pdf.name}")
+        self.assertEqual(guide.guide_pdf.name, f"doc/{self.pdf.name}")
         self.assertNotEqual(guide.guide_pdf.size, 0)
         self.assertEqual(guide.tags, tags)
 
@@ -136,6 +139,11 @@ class GuideModelTest(TestCase):
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertTrue(f'{new_price}' in guide.price_history[1])
 
+    # TODO: Add image to test
+    def test_has_thumbnail(self):
+        guide = create_guide(title="Some Title", guide_pdf=self.pdf)
+        self.assertFalse(guide.has_thumbnail())
+
 
 class IndexPageTest(TestCase):
     def setUp(self):
@@ -160,18 +168,14 @@ class DetailPageTest(TestCase):
         self.pdf = SimpleUploadedFile(
             name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
 
-        file = f"{
-            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.pdf_file_name)
 
         self.guide = create_guide(title="Some Guide", guide_pdf=self.pdf)
         self.detail_url = reverse('guide:detail', kwargs={
                                   'slug': self.guide.slug})
 
     def tearDown(self):
-        file = f"{
-            settings.BASE_DIR}/guide/doc/{self.pdf_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.pdf_file_name)
 
     def test_index_page_returns_correct_response(self):
         response = self.client.get(self.detail_url)
