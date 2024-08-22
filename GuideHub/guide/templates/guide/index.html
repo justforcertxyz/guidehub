@@ -9,7 +9,7 @@
 
 <ul>
     {% for guide in object_list %}
-        <li>{{ guide.pub_date|date }} - {{ guide }}</li>
+        <li><a href="{% url 'guide:detail' guide.slug %}">{{ guide.pub_date|date }} - {{ guide }}</a></li>
     {% empty %}
         <li>Noch keine Einträge.</li>
     {% endfor %}
