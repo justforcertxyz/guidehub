@@ -4,11 +4,8 @@ fixtures/
 staticroot/
 
 # Documents
-*.pdf
-*.jpg
-*.png
-*.jpeg
-*.webp
+img/
+doc/
 
 # Python Cache etc.
 *.pyc
