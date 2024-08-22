@@ -3,9 +3,9 @@
 fixtures/
 staticroot/
 
-# Documents
-img/
-doc/
+# Media
+media/
+
 
 # Python Cache etc.
 *.pyc
