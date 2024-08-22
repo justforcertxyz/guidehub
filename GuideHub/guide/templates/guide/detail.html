@@ -18,9 +18,11 @@
             </div>
         </div>
         <div class="guide-info">
-            <div class="guide-info-thumb">
-                <img src="{{ object.thumbnail.url }}" alt="Thumbnail">
-            </div>
+            {% if object.has_thumb %}
+                <div class="guide-info-thumb">
+                    <img src="{{ object.thumbnail.url }}" alt="Thumbnail">
+                </div>
+            {% endif %}
             <div class="guide-info-misc">
                 <div class="guide-info-misc-row">
                     <div class="guide-info-misc-item">

@@ -21,7 +21,7 @@ class Guide(models.Model):
         User, verbose_name="Author", on_delete=models.CASCADE)
     thumbnail = models.ImageField(
         "Thumbnal", upload_to="img/", blank=True, null=True)
-    guide_pdf = models.FileField("Full Guide PDF", upload_to="guide/doc/",
+    guide_pdf = models.FileField("Full Guide PDF", upload_to="doc/",
                                  validators=[FileExtensionValidator(allowed_extensions=["pdf"])])
     owned_by = models.ManyToManyField(
         User, verbose_name="Owned By", blank=True, related_name="owned_by")
@@ -44,6 +44,9 @@ class Guide(models.Model):
 
     def is_owned(self, user):
         return user in self.owned_by.get_queryset()
+
+    def has_thumbnail(self):
+        return self.thumbnail != None
 
     @classmethod
     def create_guide(cls, title, slug, description, pages, current_price, author: User, guide_pdf, tags=""):
