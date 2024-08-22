@@ -20,7 +20,7 @@ class Guide(models.Model):
     author = models.ForeignKey(
         User, verbose_name="Author", on_delete=models.CASCADE)
     thumbnail = models.ImageField(
-        "Thumbnal", upload_to="img/", blank=True, null=True)
+        "Thumbnal", upload_to="guide/static/guide/img/", blank=True, null=True)
     guide_pdf = models.FileField("Full Guide PDF", upload_to="guide/doc/",
                                  validators=[FileExtensionValidator(allowed_extensions=["pdf"])])
     owned_by = models.ManyToManyField(
