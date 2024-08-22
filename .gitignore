@@ -3,7 +3,12 @@
 fixtures/
 staticroot/
 
-# HTML Tests
+# Documents
+*.pdf
+*.jpg
+*.png
+*.jpeg
+*.webp
 
 # Python Cache etc.
 *.pyc
