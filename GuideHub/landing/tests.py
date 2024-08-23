@@ -2,6 +2,7 @@ from django.test import TestCase, Client
 from unittest import skip
 from django.urls import reverse
 from django.contrib.auth import get_user_model
+from .forms import RegisterUserForm
 
 User = get_user_model()
 
@@ -115,3 +116,41 @@ class LogoutPageTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(
             response, f'{reverse('landing:login')}?next=/abmelden')
+
+
+class RegisterUserFormTest(TestCase):
+    def setUp(self):
+        self.form = RegisterUserForm
+
+    def test_form_valid(self):
+        self.assertTrue(issubclass(self.form, RegisterUserForm))
+
+        self.assertTrue('username' in self.form.Meta.fields)
+        self.assertTrue('email' in self.form.Meta.fields)
+        self.assertTrue('password1' in self.form.Meta.fields)
+        self.assertTrue('password2' in self.form.Meta.fields)
+
+        form = self.form({
+            'username': 'username',
+            'email': 'test@test.com',
+            'password1': 'SomeStrongPassword123!xy',
+            'password2': 'SomeStrongPassword123!xy',
+        })
+
+        self.assertTrue(form.is_valid())
+
+    def test_save(self):
+        self.assertEqual(User.objects.count(), 0)
+
+        form = self.form({
+            'username': 'username',
+            'email': 'test@test.com',
+            'password1': 'SomeStrongPassword123!xy',
+            'password2': 'SomeStrongPassword123!xy',
+        })
+
+        self.assertTrue(form.is_valid())
+
+        form.save()
+
+        self.assertEqual(User.objects.count(), 1)
