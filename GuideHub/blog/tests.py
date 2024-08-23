@@ -7,14 +7,18 @@ import os
 from django.urls import reverse
 
 
+def delete_file(file_name):
+    file = f"{
+        settings.BLOG_HTML_ROOT}/{file_name}"
+    os.system(f"test -f {file} && rm {file}")
+
+
 class BlogModelTest(TestCase):
     def setUp(self):
         self.html_file_name = "test.html"
 
     def tearDown(self):
-        file = f"{
-            settings.BASE_DIR}/blog/templates/blog/entries/{self.html_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.html_file_name)
 
     def test_Blog_model_exists(self):
         blog_count = Blog.objects.count()
@@ -77,15 +81,14 @@ class DetailPageTest(TestCase):
                                   'slug': self.blog.slug})
 
     def tearDown(self):
-        file = f"{
-            settings.BASE_DIR}/blog/templates/blog/entries/{self.html_file_name}"
-        os.system(f"test -f {file} && rm {file}")
+        delete_file(self.html_file_name)
 
     def test_index_page_returns_correct_response(self):
         response = self.client.get(self.detail_url)
         self.assertTemplateUsed(response, 'blog/detail.html')
         self.assertTemplateUsed(response, 'landing/base.html')
-        self.assertTemplateUsed(response, f'blog/entries/{self.html_file_name}')
+        self.assertTemplateUsed(
+            response, f'blog/entries/{self.html_file_name}')
         self.assertEqual(response.status_code, 200)
 
     def test_index_page_returns_corrent_content(self):

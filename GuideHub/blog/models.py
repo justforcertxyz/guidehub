@@ -1,6 +1,10 @@
 from django.db import models
 from django.utils import timezone
 from taggit.managers import TaggableManager
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+
+html_storage = FileSystemStorage(location=settings.BLOG_HTML_ROOT)
 
 
 class Blog(models.Model):
@@ -8,7 +12,7 @@ class Blog(models.Model):
     slug = models.SlugField("Slug", max_length=50, unique=True)
     tags = TaggableManager()
     html_file = models.FileField("HTML File",
-                                 upload_to=f"blog/templates/blog/entries/",
+                                 storage=html_storage,
                                  null=True, blank=True
                                  )
     pub_date = models.DateTimeField("Date Published", default=timezone.now)
@@ -17,4 +21,4 @@ class Blog(models.Model):
         return self.title
 
     def template_path(self):
-        return self.html_file.name.split("templates/")[1]
+        return f"{str(settings.BLOG_HTML_ROOT).split("templates/")[1]}/{self.html_file.name}"

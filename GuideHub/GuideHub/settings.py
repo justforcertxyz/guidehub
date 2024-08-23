@@ -126,6 +126,8 @@ MEDIA_URL = 'media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
+BLOG_HTML_ROOT = BASE_DIR / 'blog/templates/blog/entries/'
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
