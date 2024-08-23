@@ -3,7 +3,10 @@ from django.utils import timezone
 from taggit.managers import TaggableManager
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth import get_user_model
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
 
+pdf_storage = FileSystemStorage(location=settings.GUIDE_PDF_ROOT)
 User = get_user_model()
 
 
@@ -21,7 +24,7 @@ class Guide(models.Model):
         User, verbose_name="Author", on_delete=models.CASCADE)
     thumbnail = models.ImageField(
         "Thumbnal", upload_to="img/", blank=True, null=True)
-    guide_pdf = models.FileField("Full Guide PDF", upload_to="doc/",
+    guide_pdf = models.FileField("Full Guide PDF", storage=pdf_storage,
                                  validators=[FileExtensionValidator(allowed_extensions=["pdf"])])
     owned_by = models.ManyToManyField(
         User, verbose_name="Owned By", blank=True, related_name="owned_by")

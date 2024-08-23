@@ -29,7 +29,7 @@ def create_guide(title, slug="slug", description="description", price=0, pages=1
 
 def delete_file(file_name):
     file = f"{
-        settings.MEDIA_ROOT}/doc/{file_name}"
+        settings.GUIDE_PDF_ROOT}/{file_name}"
     os.system(f"test -f {file} && rm {file}")
 
 
@@ -75,7 +75,7 @@ class GuideModelTest(TestCase):
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertEqual(guide.author, author)
         self.assertEqual(guide.guide_pdf.size, self.pdf.size)
-        self.assertEqual(guide.guide_pdf.name, f"doc/{self.pdf.name}")
+        self.assertEqual(guide.guide_pdf.name, self.pdf.name)
         self.assertNotEqual(guide.guide_pdf.size, 0)
         self.assertEqual(guide.tags, tags)
 
