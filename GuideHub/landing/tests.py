@@ -154,3 +154,48 @@ class RegisterUserFormTest(TestCase):
         form.save()
 
         self.assertEqual(User.objects.count(), 1)
+
+
+class RegisterUserPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.register_url = reverse('landing:register')
+        self.success_url = reverse('landing:login')
+
+    def test_register_page_returns_correct_response(self):
+        response = self.client.get(self.register_url)
+        self.assertTemplateUsed(response, 'landing/register.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_register_page_returns_correct_response_POST(self):
+        self.assertEqual(User.objects.count(), 0)
+
+        response = self.client.post(self.register_url,
+                                    {
+                                        'username': 'username',
+                                        'email': 'ok@ok.com',
+                                        'password1': "OKPassword123",
+                                        'password2': "OKPassword123"
+                                    })
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.success_url)
+
+        self.assertEqual(User.objects.count(), 1)
+
+    def test_register_page_correct_content(self):
+        response = self.client.get(self.register_url)
+
+        self.assertContains(response, '<form')
+        self.assertContains(response, 'csrfmiddlewaretoken')
+        self.assertContains(response, '<label for')
+        self.assertContains(response, '<input type="submit"')
+        self.assertContains(response, "<title>Registrieren")
+
+        username = "User"
+        password = "foo"
+        User.objects.create_user(username=username, password=password)
+        logged_in = self.client.login(username=username, password=password)
+        self.assertTrue(logged_in)
+        response = self.client.get(self.register_url)
+        self.assertContains(response, 'bereits angemeldet')

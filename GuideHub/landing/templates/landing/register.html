@@ -1,0 +1,21 @@
+{% extends "landing/base.html" %}
+
+{% block title %}Registrieren{% endblock %}
+
+{% block content %}
+<h1>Registrieren</h1>
+
+{% if user.is_authenticated %}
+    <h3>Sie sind bereits angemeldet!</h3>
+{% else %}
+    <p>Bitte Registrieren Sie sich.
+        Sie haben bereits einen Account? <a href="{% url 'landing:login' %}">Melden</a> Sie sich an.
+    </p>
+    <form method="post" action="{% url 'landing:register' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Registrieren">
+    </form>
+{% endif %}
+
+{% endblock content %}
