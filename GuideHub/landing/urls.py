@@ -8,4 +8,5 @@ urlpatterns = [
     path("datenschutz", views.PrivacyPolicyView.as_view(), name="privacy-policy"),
     path("impressum/", views.ImprintView.as_view(), name="imprint"),
     path("anmelden/", views.LoginUserView.as_view(), name="login"),
+    path("abmelden", views.LogoutUserView.as_view(), name="logout"),
 ]

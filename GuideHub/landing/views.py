@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.views.generic.base import TemplateView
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+
 
 class IndexView(TemplateView):
     template_name = "landing/index.html"
@@ -18,3 +20,13 @@ class ImprintView(TemplateView):
 class LoginUserView(LoginView):
     template_name = "landing/login.html"
     next_page = reverse_lazy("landing:index")
+
+
+class LogoutUserView(LoginRequiredMixin, LogoutView):
+    http_method_names = ["get", "post"]
+    template_name = "landing/logout.html"
+    next_page = reverse_lazy("landing:index")
+    login_url = "landing:login"
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)

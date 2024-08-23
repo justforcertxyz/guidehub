@@ -1,0 +1,9 @@
+{% extends "landing/base.html" %}
+{% block title %}Abmelden{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'landing:logout' %}">
+    {% csrf_token %}
+    <button type="submit">Abmelden</button>
+</form>
+{% endblock content %}

@@ -90,3 +90,28 @@ class LoginPageTest(TestCase):
         self.assertTrue(logged_in)
         response = self.client.get(self.login_url)
         self.assertContains(response, 'bereits angemeldet')
+
+
+class LogoutPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        username = "User"
+        password = "foo"
+        User.objects.create_user(username=username, password=password)
+        self.logged_in = self.client.login(
+            username=username, password=password)
+        self.logout_url = reverse('landing:logout')
+        self.success_url = reverse('landing:index')
+
+    def test_logout_page_returns_correct_response(self):
+        self.assertTrue(self.logged_in)
+        response = self.client.post(self.logout_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.success_url)
+
+        self.logged_in = self.client.logout()
+        self.assertFalse(self.logged_in)
+        response = self.client.get(self.logout_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response, f'{reverse('landing:login')}?next=/abmelden')

@@ -16,11 +16,11 @@
             <a href="{% url 'guide:index' %}">Guides</a>
             <a href="{% url 'blog:index' %}">Blog</a>
             {% if user.is_authenticated %}
-            <a href="#">Dashboard</a>
-            <a href="#">Abmelden</a>
+                <a href="#">Dashboard</a>
+                <a href="{% url 'landing:logout' %}">Abmelden</a>
             {% else %}
-            <a href="{% url 'landing:login' %}">Anmelden</a>
-            <a href="#">Registrieren</a>
+                <a href="{% url 'landing:login' %}">Anmelden</a>
+                <a href="#">Registrieren</a>
             {% endif %}
         </nav>
     </header>    
@@ -44,7 +44,7 @@
                 <a href="{% url 'blog:index' %}">Blog</a>
                 {% if user.is_authenticated %}
                     <a href="#">Dashboard</a>
-                    <a href="#">Abmelden</a>
+                    <a href="{% url 'landing:logout' %}">Abmelden</a>
                 {% else %}
                     <a href="{% url 'landing:login' %}">Anmelden</a>
                     <a href="#">Registrieren</a>
