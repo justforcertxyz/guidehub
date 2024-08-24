@@ -3,8 +3,34 @@ from unittest import skip
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from .forms import RegisterUserForm
+from guide.models import Guide
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
+import os
 
 User = get_user_model()
+
+
+def create_guide(title, slug="some_slug", description="description", price=0, pages=1, author="", guide_pdf="", tags=""):
+    if author == "":
+        author = User.objects.create_user(username="Name", password="Foo")
+
+    if guide_pdf == "":
+        guide_pdf = SimpleUploadedFile(
+            name="test_guide.pdf", content=b'Test guide', content_type="text/pdf")
+
+    return Guide.create_guide(title=title, slug=slug,
+                              description=description, current_price=price, pages=pages,
+                              author=author,
+                              guide_pdf=guide_pdf,
+                              tags=tags,
+                              )
+
+
+def delete_file(file_name):
+    file = f"{
+        settings.GUIDE_PDF_ROOT}/{file_name}"
+    os.system(f"test -f {file} && rm {file}")
 
 
 class IndexPageTest(TestCase):
@@ -199,3 +225,62 @@ class RegisterUserPageTest(TestCase):
         self.assertTrue(logged_in)
         response = self.client.get(self.register_url)
         self.assertContains(response, 'bereits angemeldet')
+
+
+class DashboardPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        username = "User"
+        password = "foo"
+        self.user = User.objects.create_user(
+            username=username, password=password)
+        self.logged_in = self.client.login(
+            username=username, password=password)
+        self.dashboard_url = reverse('landing:dashboard')
+        self.login_url = reverse('landing:login')
+        self.pdf_file_name = "test_guide.pdf"
+
+        delete_file(self.pdf_file_name)
+
+    def tearDown(self):
+        delete_file(self.pdf_file_name)
+
+    def test_register_page_returns_correct_response(self):
+        self.assertTrue(self.logged_in)
+        response = self.client.get(self.dashboard_url)
+        self.assertTemplateUsed(response, 'landing/dashboard.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+        self.logged_in = self.client.logout()
+        self.assertFalse(self.logged_in)
+        response = self.client.get(self.dashboard_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, f"{self.login_url}?next=/dashboard/")
+
+    def test_page_return_correct_content(self):
+        guide1 = create_guide(title="Some Guide", author=self.user, price=10)
+        response = self.client.get(self.dashboard_url)
+        self.assertEqual(response.context['guides_owned'][0], guide1)
+        self.assertEqual(response.context['guides_written'][0], guide1)
+
+        guide2 = create_guide(title="Another Guide",
+                              slug="another_guide", author=self.user, price=5)
+        response = self.client.get(self.dashboard_url)
+        self.assertEqual(response.context['guides_owned'][0], guide2)
+        self.assertEqual(response.context['guides_written'][0], guide2)
+        self.assertEqual(response.context['guides_owned'][1], guide1)
+        self.assertEqual(response.context['guides_written'][1], guide1)
+
+        guide3 = create_guide(title="Another other Guide",
+                              slug="another_other_guide", author=self.user, price=15)
+        guide4 = create_guide(title="Cheaper Guide",
+                              slug="cheaper_guide", author=self.user, price=9.5)
+
+        response = self.client.get(self.dashboard_url)
+        self.assertEqual(response.context['guides_owned'][0], guide2)
+        self.assertEqual(response.context['guides_written'][0], guide2)
+        self.assertEqual(response.context['guides_owned'][1], guide4)
+        self.assertEqual(response.context['guides_written'][1], guide4)
+        self.assertEqual(response.context['guides_owned'][2], guide1)
+        self.assertEqual(response.context['guides_written'][2], guide1)

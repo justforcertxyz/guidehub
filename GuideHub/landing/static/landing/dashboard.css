@@ -1,0 +1,17 @@
+.dashboard-item {
+    border-radius: 2rem;
+    border: solid;
+    margin-bottom: 2rem;
+    padding: 1rem;
+}
+
+.dashboard-item a {
+    font-family: 'zain';
+    text-decoration: none;
+    color: seagreen;
+    transition: .3s;
+}
+
+.dashboard-item a:hover {
+    color: red;
+}

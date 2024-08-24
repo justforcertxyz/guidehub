@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import RegisterUserForm
 from django.views.generic.edit import CreateView
+from guide.models import Guide
 
 
 class IndexView(TemplateView):
@@ -38,3 +39,15 @@ class RegisterUserView(CreateView):
     template_name = "landing/register.html"
     form_class = RegisterUserForm
     success_url = reverse_lazy("landing:login")
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = "landing/dashboard.html"
+    login_url = "landing:login"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["guides_owned"] = [guide for guide in Guide.objects.all().order_by('current_price')[:3] if guide.is_owned(self.request.user)]
+        context["guides_written"] = [guide for guide in Guide.objects.all().order_by('current_price')[:3] if guide.author == self.request.user]
+        return context
+    

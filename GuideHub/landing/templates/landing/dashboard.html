@@ -1,0 +1,37 @@
+{% extends "landing/base.html" %}
+
+{% block css %}
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'landing/dashboard.css' %}">
+{% endblock %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<div class="dashboard-item">
+    <h2>Guides in Besitz</h2>
+    {% for guide in guides_owned %}
+        <h2>{{ guide.title }}</h2>
+    {% empty %}
+        <h2>Noch keine Guides in Besitz!</h2>
+    {% endfor %}
+    <a href="#">Alle Ansehen</a>
+</div>
+
+<div class="dashboard-item">
+    <h2>Selbst geschriebene Guides</h2>
+    {% for guide in guides_written %}
+        <h2>{{ guide.title }}</h2>
+    {% empty %}
+        <h2>Noch keine Guides veröffentlicht!</h2>
+    {% endfor %}
+    <a href="#">Alle Ansehen</a>
+</div>
+
+<div class="dashboard-item">
+    <h2>Einstellungen</h2>
+</div>
+
+{% endblock content %}
