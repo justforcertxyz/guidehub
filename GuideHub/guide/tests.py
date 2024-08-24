@@ -161,6 +161,23 @@ class GuideModelTest(TestCase):
         self.assertEqual(order.price, guide.current_price)
         self.assertEqual(order.user, user)
 
+    def test_amount_orders(self):
+        guide = create_guide(title="Some Title", guide_pdf=self.pdf)
+
+        username = "User"
+        password = "Foo"
+        user = User.objects.create_user(username=username, password=password)
+
+        guide.place_order(user)
+        self.assertEqual(guide.amount_orders(), 1)
+
+        username = "Resu"
+        password = "Foo"
+        user = User.objects.create_user(username=username, password=password)
+
+        guide.place_order(user)
+        self.assertEqual(guide.amount_orders(), 2)
+
 class IndexPageTest(TestCase):
     def setUp(self):
         self.client = Client()

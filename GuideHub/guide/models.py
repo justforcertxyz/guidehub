@@ -78,6 +78,9 @@ class Guide(models.Model):
         Order.create_order(self, self.current_price, user)
         return True
 
+    def amount_orders(self):
+        return self.order_set.count()
+
 
 class Order(models.Model):
     price = models.DecimalField(
