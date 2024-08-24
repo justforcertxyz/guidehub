@@ -10,18 +10,6 @@ pdf_storage = FileSystemStorage(location=settings.GUIDE_PDF_ROOT)
 User = get_user_model()
 
 
-class Order(models.Model):
-    price = models.DecimalField(
-        "Price of Order", max_digits=6, decimal_places=2)
-    date = models.DateTimeField("Date of Order", default=timezone.now)
-    user = models.ForeignKey(
-        User, verbose_name="User who ordered", on_delete=models.CASCADE)
-
-    @classmethod
-    def create_order(cls, price, user):
-        return Order.objects.create(price=price, user=user)
-
-
 class Guide(models.Model):
     title = models.CharField("Title", max_length=50)
     pub_date = models.DateTimeField("Date Published", default=timezone.now)
@@ -43,9 +31,6 @@ class Guide(models.Model):
 
     language = models.CharField("Language", max_length=7, default="deutsch")
     tags = TaggableManager(blank=True)
-
-    order = models.ForeignKey(
-        Order, verbose_name="Order", null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -88,3 +73,20 @@ class Guide(models.Model):
                     guide.add_owner(su)
 
         return guide
+
+    def place_order(self, user) -> bool:
+        Order.create_order(self, self.current_price, user)
+        return True
+
+
+class Order(models.Model):
+    price = models.DecimalField(
+        "Price of Order", max_digits=6, decimal_places=2)
+    date = models.DateTimeField("Date of Order", default=timezone.now)
+    user = models.ForeignKey(
+        User, verbose_name="User who ordered", on_delete=models.CASCADE)
+    guide = models.ForeignKey(Guide, verbose_name="Guide ordered", on_delete=models.CASCADE)
+
+    @classmethod
+    def create_order(cls, guide, price, user):
+        return Order.objects.create(guide=guide, price=price, user=user)

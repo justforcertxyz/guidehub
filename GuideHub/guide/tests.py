@@ -144,6 +144,22 @@ class GuideModelTest(TestCase):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         self.assertFalse(guide.has_thumbnail())
 
+    def test_place_order(self):
+        guide = create_guide(title="Some Title", guide_pdf=self.pdf)
+
+        username = "User"
+        password = "Foo"
+        user = User.objects.create_user(username=username, password=password)
+
+        order_placed = guide.place_order(user)
+        self.assertTrue(order_placed)
+        order_count = Order.objects.count()
+        self.assertEqual(order_count, 1)
+
+        order = Order.objects.first()
+        self.assertEqual(order.guide, guide)
+        self.assertEqual(order.price, guide.current_price)
+        self.assertEqual(order.user, user)
 
 class IndexPageTest(TestCase):
     def setUp(self):
@@ -239,13 +255,16 @@ class OrderModelTest(TestCase):
         user = User.objects.create_user(username=username, password=password)
 
         price = 5
-        order = Order.create_order(price=price, user=user)
+        guide = create_guide(title="Some Guide", price=price)
+
+        order = Order.create_order(guide=guide, price=guide.current_price, user=user)
 
         order_count = Order.objects.count()
         self.assertTrue(isinstance(order, Order))
         self.assertEqual(order_count, 1)
         self.assertEqual(order, Order.objects.first())
 
+        self.assertEqual(order.guide, guide)
         self.assertEqual(order.price, price)
         self.assertEqual(order.user, user)
 
