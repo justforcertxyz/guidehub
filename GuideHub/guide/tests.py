@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from .models import Guide
+from .models import Guide, Order
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
@@ -225,3 +225,27 @@ class DownloadPageTest(TestCase):
         response = self.client.get(self.download_url)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('landing:index'))
+
+
+class OrderModelTest(TestCase):
+    def test_order_model_exists(self):
+        order_count = Order.objects.count()
+
+        self.assertEqual(order_count, 0)
+
+    def test_create_order(self):
+        username = "User"
+        password = "Foo"
+        user = User.objects.create_user(username=username, password=password)
+
+        price = 5
+        order = Order.create_order(price=price, user=user)
+
+        order_count = Order.objects.count()
+        self.assertTrue(isinstance(order, Order))
+        self.assertEqual(order_count, 1)
+        self.assertEqual(order, Order.objects.first())
+
+        self.assertEqual(order.price, price)
+        self.assertEqual(order.user, user)
+

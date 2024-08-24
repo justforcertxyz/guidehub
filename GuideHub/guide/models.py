@@ -10,6 +10,18 @@ pdf_storage = FileSystemStorage(location=settings.GUIDE_PDF_ROOT)
 User = get_user_model()
 
 
+class Order(models.Model):
+    price = models.DecimalField(
+        "Price of Order", max_digits=6, decimal_places=2)
+    date = models.DateTimeField("Date of Order", default=timezone.now)
+    user = models.ForeignKey(
+        User, verbose_name="User who ordered", on_delete=models.CASCADE)
+
+    @classmethod
+    def create_order(cls, price, user):
+        return Order.objects.create(price=price, user=user)
+
+
 class Guide(models.Model):
     title = models.CharField("Title", max_length=50)
     pub_date = models.DateTimeField("Date Published", default=timezone.now)
@@ -18,7 +30,7 @@ class Guide(models.Model):
         "Guide Text", max_length=2000, blank=True, null=True)
     pages = models.PositiveIntegerField("Amount of Pages", default=1)
     current_price = models.DecimalField(
-        "Current Guide Price", max_digits=4, decimal_places=2)
+        "Current Guide Price", max_digits=6, decimal_places=2)
     price_history = models.JSONField("Price History", blank=True, null=True)
     author = models.ForeignKey(
         User, verbose_name="Author", on_delete=models.CASCADE)
@@ -31,6 +43,9 @@ class Guide(models.Model):
 
     language = models.CharField("Language", max_length=7, default="deutsch")
     tags = TaggableManager(blank=True)
+
+    order = models.ForeignKey(
+        Order, verbose_name="Order", null=True, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.title
@@ -48,8 +63,13 @@ class Guide(models.Model):
     def is_owned(self, user):
         return user in self.owned_by.get_queryset()
 
+    # TODO: Maybe different solution?
     def has_thumbnail(self):
-        return self.thumbnail != None
+        try:
+            self.thumbnail.url
+            return True
+        except:
+            return False
 
     @classmethod
     def create_guide(cls, title, slug, description, pages, current_price, author: User, guide_pdf, tags=""):
