@@ -2,7 +2,9 @@
     border-radius: 2rem;
     border: solid;
     margin-bottom: 2rem;
-    padding: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1rem;
 }
 
 .dashboard-item a {
@@ -14,4 +16,20 @@
 
 .dashboard-item a:hover {
     color: red;
+}
+
+.guide-list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.guide-list-item {
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-bottom: 1rem;
+}
+
+.guide-list-item img {
+    max-width: 10rem;
 }

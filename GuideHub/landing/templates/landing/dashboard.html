@@ -11,27 +11,38 @@
 <h1>Dashboard</h1>
 
 <div class="dashboard-item">
-    <h2>Guides in Besitz</h2>
-    {% for guide in guides_owned %}
-        <h2>{{ guide.title }}</h2>
-    {% empty %}
-        <h2>Noch keine Guides in Besitz!</h2>
-    {% endfor %}
+    <h3>Guides in Besitz</h3>
+    <div class="guide-list">
+        {% for guide in guides_owned %}
+            <p>{{ guide.title }}</p>
+        {% empty %}
+            <p>Noch keine Guides in Besitz!</p>
+        {% endfor %}
+    </div>
     <a href="#">Alle Ansehen</a>
 </div>
 
 <div class="dashboard-item">
-    <h2>Selbst geschriebene Guides</h2>
-    {% for guide in guides_written %}
-        <h2>{{ guide.title }}</h2>
-    {% empty %}
-        <h2>Noch keine Guides veröffentlicht!</h2>
-    {% endfor %}
+    <h3>Selbst geschriebene Guides</h3>
+    <div class="guide-list">
+        {% for guide in guides_written %}
+            <div class="guide-list-item">
+                <p>{{ guide.title }}</p>
+                {% if guide.has_thumbnail %}
+                    <img src="{{ guide.thumbnail.url }}" alt="Thumbnail">
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="guide-list-item">
+                <p>Noch keine Guides veröffentlicht!</p>
+            </div>
+        {% endfor %}
+    </div>
     <a href="#">Alle Ansehen</a>
 </div>
 
 <div class="dashboard-item">
-    <h2>Einstellungen</h2>
+    <h3>Einstellungen</h3>
 </div>
 
 {% endblock content %}
