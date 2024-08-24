@@ -31,6 +31,8 @@
                 {% if guide.has_thumbnail %}
                     <img src="{{ guide.thumbnail.url }}" alt="Thumbnail">
                 {% endif %}
+                <p>{{ guide.amount_orders }} verkauft.</p>
+                <p>{{ guide.current_price }}€ ink. MwSt.</p>
             </div>
         {% empty %}
             <div class="guide-list-item">
