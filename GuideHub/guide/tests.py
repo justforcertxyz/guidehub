@@ -11,7 +11,7 @@ from unittest import skip
 User = get_user_model()
 
 
-def create_guide(title, slug="slug", description="description", price=0, pages=1, author="", guide_pdf="", tags=""):
+def create_guide(title, slug="some_slug", description="description", price=0, pages=1, author="", guide_pdf="", tags=""):
     if author == "":
         author = User.objects.create_user(username="Name", password="Foo")
 
@@ -182,3 +182,46 @@ class DetailPageTest(TestCase):
         self.assertTemplateUsed(response, 'guide/detail.html')
         self.assertTemplateUsed(response, 'landing/base.html')
         self.assertEqual(response.status_code, 200)
+
+
+class DownloadPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.pdf_file_name = "test_guide.pdf"
+        self.pdf = SimpleUploadedFile(
+            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+
+        delete_file(self.pdf_file_name)
+
+        self.guide = create_guide(title="Some Guide", guide_pdf=self.pdf)
+        self.download_url = reverse('guide:download', kwargs={
+                                    'slug': self.guide.slug})
+
+    def tearDown(self):
+        delete_file(self.pdf_file_name)
+
+    def test_download_page_correct_response(self):
+        username = "User"
+        password = "Foo"
+        user = User.objects.create_user(username=username, password=password)
+        logged_in = self.client.login(username=username, password=password)
+        self.assertTrue(logged_in)
+
+        response = self.client.get(self.download_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('landing:index'))
+
+        self.guide.add_owner(user)
+
+        response = self.client.get(self.download_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['Content-Type'], 'application/pdf')
+        self.assertEqual(response.headers['Content-Disposition'], 'attachment; filename="test_guide.pdf"')
+
+        logged_in = self.client.logout()
+        self.assertFalse(logged_in)
+
+        response = self.client.get(self.download_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('landing:index'))
+        
