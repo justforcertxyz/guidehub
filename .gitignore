@@ -5,6 +5,8 @@ staticroot/
 
 # Media
 media/
+doc/
+entries/
 
 
 # Python Cache etc.
