@@ -164,6 +164,8 @@ class GuideModelTest(TestCase):
     def test_amount_orders(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
 
+        self.assertEqual(guide.amount_orders(), 0)
+
         username = "User"
         password = "Foo"
         user = User.objects.create_user(username=username, password=password)
