@@ -47,7 +47,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["guides_owned"] = [guide for guide in Guide.objects.all().order_by('current_price')[:3] if guide.is_owned(self.request.user)]
-        context["guides_written"] = [guide for guide in Guide.objects.all().order_by('current_price')[:3] if guide.author == self.request.user]
+        context["guides_owned"] = [guide for guide in Guide.objects.all().order_by(
+            'current_price')[:3] if guide.is_owned(self.request.user)]
+        context["guides_written"] = [guide for guide in Guide.objects.all().order_by(
+            'current_price')[:3] if guide.author == self.request.user]
         return context
-    
