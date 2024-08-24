@@ -216,7 +216,8 @@ class DownloadPageTest(TestCase):
         response = self.client.get(self.download_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers['Content-Type'], 'application/pdf')
-        self.assertEqual(response.headers['Content-Disposition'], 'attachment; filename="test_guide.pdf"')
+        self.assertEqual(
+            response.headers['Content-Disposition'], 'attachment; filename="test_guide.pdf"')
 
         logged_in = self.client.logout()
         self.assertFalse(logged_in)
@@ -224,4 +225,3 @@ class DownloadPageTest(TestCase):
         response = self.client.get(self.download_url)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('landing:index'))
-        
