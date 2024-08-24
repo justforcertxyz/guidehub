@@ -178,6 +178,7 @@ class GuideModelTest(TestCase):
         guide.place_order(user)
         self.assertEqual(guide.amount_orders(), 2)
 
+
 class IndexPageTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -274,7 +275,8 @@ class OrderModelTest(TestCase):
         price = 5
         guide = create_guide(title="Some Guide", price=price)
 
-        order = Order.create_order(guide=guide, price=guide.current_price, user=user)
+        order = Order.create_order(
+            guide=guide, price=guide.current_price, user=user)
 
         order_count = Order.objects.count()
         self.assertTrue(isinstance(order, Order))
@@ -284,4 +286,3 @@ class OrderModelTest(TestCase):
         self.assertEqual(order.guide, guide)
         self.assertEqual(order.price, price)
         self.assertEqual(order.user, user)
-

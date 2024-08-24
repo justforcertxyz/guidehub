@@ -88,7 +88,8 @@ class Order(models.Model):
     date = models.DateTimeField("Date of Order", default=timezone.now)
     user = models.ForeignKey(
         User, verbose_name="User who ordered", on_delete=models.CASCADE)
-    guide = models.ForeignKey(Guide, verbose_name="Guide ordered", on_delete=models.CASCADE)
+    guide = models.ForeignKey(
+        Guide, verbose_name="Guide ordered", on_delete=models.CASCADE)
 
     @classmethod
     def create_order(cls, guide, price, user):
