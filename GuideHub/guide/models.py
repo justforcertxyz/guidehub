@@ -5,6 +5,7 @@ from django.core.validators import FileExtensionValidator
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
+import stripe
 
 pdf_storage = FileSystemStorage(location=settings.GUIDE_PDF_ROOT)
 User = get_user_model()
@@ -32,9 +33,21 @@ class Guide(models.Model):
     language = models.CharField("Language", max_length=7, default="deutsch")
     tags = TaggableManager(blank=True)
 
+    stripe_url = models.URLField(
+        "Stripe Product URL", max_length=200, blank=True)
+    stripe_product_id = models.CharField(
+        "Strip Product ID", max_length=50, blank=True)
+    stripe_price_id = models.CharField(
+        "Stripe Price ID", max_length=50, blank=True)
+    stripe_payment_link_id = models.CharField(
+        "Stripe PaymentLink ID", max_length=50, blank=True)
+
+    is_active = models.BooleanField("Guide is active", default=False)
+
     def __str__(self):
         return self.title
 
+    # TODO: Update stripe price aswell
     def set_price(self, new_price, commit=True):
         self.price = new_price
         self.price_history.append([f'{new_price}', f'{timezone.now()}'])
@@ -80,6 +93,28 @@ class Guide(models.Model):
 
     def amount_orders(self):
         return self.order_set.count()
+
+    def activate(self):
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        product = stripe.Product.create(name=self.title)
+        self.stripe_product_id = product['id']
+
+        price = stripe.Price.create(
+            currency="eur", unit_amount=self.current_price*100, product=self.stripe_product_id)
+        self.stripe_price_id = price['id']
+
+        payment_link = stripe.PaymentLink.create(
+            line_items=[{"price": self.stripe_price_id, "quantity": 1}],
+            invoice_creation={"enabled": True},
+            automatic_tax={"enabled": True})
+
+        self.stripe_payment_link_id = payment_link['id']
+        self.stripe_url = payment_link['url']
+
+        print(f"{self.stripe_url=}")
+
+        self.is_active = True
+        self.save()
 
 
 class Order(models.Model):
