@@ -94,24 +94,25 @@ class Guide(models.Model):
     def amount_orders(self):
         return self.order_set.count()
 
+    # TODO: Only activate if not laready active
     def activate(self):
         stripe.api_key = settings.STRIPE_SECRET_KEY
         product = stripe.Product.create(name=self.title)
         self.stripe_product_id = product['id']
 
         price = stripe.Price.create(
-            currency="eur", unit_amount=self.current_price*100, product=self.stripe_product_id)
+            currency="eur", unit_amount=int(self.current_price*100), product=self.stripe_product_id)
         self.stripe_price_id = price['id']
 
-        payment_link = stripe.PaymentLink.create(
-            line_items=[{"price": self.stripe_price_id, "quantity": 1}],
-            invoice_creation={"enabled": True},
-            automatic_tax={"enabled": True})
+        # payment_link = stripe.PaymentLink.create(
+        #     line_items=[{"price": self.stripe_price_id, "quantity": 1}],
+        #     invoice_creation={"enabled": True},
+        #     automatic_tax={"enabled": True})
 
-        self.stripe_payment_link_id = payment_link['id']
-        self.stripe_url = payment_link['url']
+        # self.stripe_payment_link_id = payment_link['id']
+        # self.stripe_url = payment_link['url']
 
-        print(f"{self.stripe_url=}")
+        # print(f"{self.stripe_url=}")
 
         self.is_active = True
         self.save()
@@ -125,6 +126,8 @@ class Order(models.Model):
         User, verbose_name="User who ordered", on_delete=models.CASCADE)
     guide = models.ForeignKey(
         Guide, verbose_name="Guide ordered", on_delete=models.CASCADE)
+    stripe_checkout_id = models.CharField(
+        "Stripe Checkout ID", max_length=50, blank=True)
 
     @classmethod
     def create_order(cls, guide, price, user):
