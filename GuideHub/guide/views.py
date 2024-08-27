@@ -40,6 +40,7 @@ class GuideDetailView(DetailView):
                                                                       "enabled": True},
                                                                   automatic_tax={
                                                                       "enabled": True},
+                                                                  mode="payment",
                                                                   # success_url=f"{
                                                                   #     reverse('guide:payment-success')}",
                                                                   # cancel_url=f"{reverse('guide:payment-failed')}")
