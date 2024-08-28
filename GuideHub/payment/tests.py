@@ -117,5 +117,19 @@ class CheckoutPageTest(TestCase):
         self.assertContains(response, "<title>Checkout")
         self.assertContains(response, '<form')
         self.assertContains(response, '<button')
-        self.assertContains(response, f' href="{self.checkout_url + self.query_string}"')
+        self.assertContains(response,
+                            f' href="{self.checkout_url + self.query_string}"')
         self.assertContains(response, 'csrfmiddlewaretoken')
+
+    def test_checkout_page_returns_correct_response_POST(self):
+        self.assertFalse(self.guide.is_active)
+
+        response = self.client.post(self.checkout_url + self.query_string)
+        self.assertEqual(response.status_code, 404)
+
+        self.guide.activate()
+        self.assertTrue(self.guide.is_active)
+
+        response = self.client.post(self.checkout_url + self.query_string)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue('checkout.stripe.com' in response.url)

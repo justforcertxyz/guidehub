@@ -1,8 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.conf import settings
 import stripe
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from .models import Order
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -67,7 +67,8 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         stripe.api_key = settings.STRIPE_SECRET_KEY
-        guide = get_object_or_404(Guide, slug=kwargs['slug'])
+        guide = get_object_or_404(
+            Guide, slug=self.request.GET.get('guide'))
 
         # TODO: What if inactive -> Shouldnt be shown at all
         if guide.is_active:
@@ -92,4 +93,7 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
             except Exception as e:
                 print(f"Exception: {e}")
                 raise Http404
+        else:
+            raise Http404
+
         return HttpResponseRedirect(reverse('landing:login'))
