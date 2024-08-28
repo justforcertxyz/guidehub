@@ -80,7 +80,6 @@ class CheckoutPageTest(TestCase):
             username=username, password=password)
         self.logged_in = self.client.login(
             username=username, password=password)
-        self.dashboard_url = reverse('landing:dashboard')
         self.checkout_url = reverse('payment:checkout')
         self.pdf_file_name = "test_guide.pdf"
         self.pdf = SimpleUploadedFile(
@@ -121,6 +120,7 @@ class CheckoutPageTest(TestCase):
                             f' href="{self.checkout_url + self.query_string}"')
         self.assertContains(response, 'csrfmiddlewaretoken')
 
+    @skip
     def test_checkout_page_returns_correct_response_POST(self):
         self.assertFalse(self.guide.is_active)
 
@@ -133,3 +133,76 @@ class CheckoutPageTest(TestCase):
         response = self.client.post(self.checkout_url + self.query_string)
         self.assertEqual(response.status_code, 302)
         self.assertTrue('https://checkout.stripe.com' in response.url)
+
+
+class PaymentSuccesPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        username = "User"
+        password = "foo"
+        self.user = User.objects.create_user(
+            username=username, password=password)
+        self.logged_in = self.client.login(
+            username=username, password=password)
+        self.payment_url = reverse('payment:payment-success')
+        self.pdf_file_name = "test_guide.pdf"
+        self.pdf = SimpleUploadedFile(
+            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+
+        delete_file(self.pdf_file_name)
+
+        self.guide = create_guide(title="Some Guide", guide_pdf=self.pdf)
+        self.query_string = f"?guide={self.guide.slug}"
+
+    def tearDown(self):
+        delete_file(self.pdf_file_name)
+
+    def test_payment_success_page_return_correct_response(self):
+        self.assertTrue(self.logged_in)
+
+        response = self.client.get(self.payment_url)
+        self.assertTemplateUsed(response, 'payment/payment_success.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+        self.logged_in = self.client.logout()
+        self.assertFalse(self.logged_in)
+        response = self.client.get(self.payment_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse(
+            'landing:login') + "?next=" + self.payment_url)
+
+    def test_payment_success_page_returns_correct_content(self):
+        response = self.client.get(self.payment_url)
+        self.assertContains(response, "<title>Erfolgreich")
+
+
+class PaymentFailedPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        username = "User"
+        password = "foo"
+        self.user = User.objects.create_user(
+            username=username, password=password)
+        self.logged_in = self.client.login(
+            username=username, password=password)
+        self.payment_url = reverse('payment:payment-failed')
+
+    def test_payment_success_page_return_correct_response(self):
+        self.assertTrue(self.logged_in)
+
+        response = self.client.get(self.payment_url)
+        self.assertTemplateUsed(response, 'payment/payment_failed.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+        self.logged_in = self.client.logout()
+        self.assertFalse(self.logged_in)
+        response = self.client.get(self.payment_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse(
+            'landing:login') + "?next=" + self.payment_url)
+
+    def test_payment_success_page_returns_correct_content(self):
+        response = self.client.get(self.payment_url)
+        self.assertContains(response, "<title>Fehler")

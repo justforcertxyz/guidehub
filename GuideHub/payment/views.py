@@ -52,6 +52,16 @@ def _fullfill_checkout(session):
         print(f"{order.price}")
 
 
+class PaymentFailedView(LoginRequiredMixin, TemplateView):
+    template_name = "payment/payment_failed.html"
+    login_url = "landing:login"
+
+
+class PaymentSuccessView(LoginRequiredMixin, TemplateView):
+    template_name = "payment/payment_success.html"
+    login_url = "landing:login"
+
+
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = "payment/checkout.html"
     login_url = "landing:login"
@@ -84,8 +94,8 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
                                                                   # success_url=f"{
                                                                   #     reverse('guide:payment-success')}",
                                                                   # cancel_url=f"{reverse('guide:payment-failed')}")
-                                                                  success_url="http://127.0.0.1:8000/guide/erfolgreich",
-                                                                  cancel_url="http://127.0.0.1:8000/guide/abgebrochen")
+                                                                  success_url="http://127.0.0.1:8000/payment/erfolgreich",
+                                                                  cancel_url="http://127.0.0.1:8000/payment/abgebrochen")
                 order = Order.create_order(
                     guide, guide.current_price, request.user, stripe_checkout_id=checkout_session["id"])
 
