@@ -132,4 +132,4 @@ class CheckoutPageTest(TestCase):
 
         response = self.client.post(self.checkout_url + self.query_string)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('checkout.stripe.com' in response.url)
+        self.assertTrue('https://checkout.stripe.com' in response.url)
