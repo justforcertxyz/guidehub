@@ -33,14 +33,10 @@ class Guide(models.Model):
     language = models.CharField("Language", max_length=7, default="deutsch")
     tags = TaggableManager(blank=True)
 
-    stripe_url = models.URLField(
-        "Stripe Product URL", max_length=200, blank=True)
     stripe_product_id = models.CharField(
         "Strip Product ID", max_length=50, blank=True)
     stripe_price_id = models.CharField(
         "Stripe Price ID", max_length=50, blank=True)
-    stripe_payment_link_id = models.CharField(
-        "Stripe PaymentLink ID", max_length=50, blank=True)
 
     is_active = models.BooleanField("Guide is active", default=False)
 
