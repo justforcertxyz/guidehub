@@ -58,7 +58,7 @@ import stripe
 from django.views.decorators.csrf import csrf_exempt
 import time
 from django.http import HttpResponse
-from guide.models import Order
+from payment.models import Order
 
 @csrf_exempt
 def stripe_webhook_view(request):

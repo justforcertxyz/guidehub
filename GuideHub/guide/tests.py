@@ -1,5 +1,5 @@
 from django.test import TestCase, Client
-from .models import Guide, Order
+from .models import Guide
 from django.contrib.auth import get_user_model
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
@@ -281,42 +281,42 @@ class DownloadPageTest(TestCase):
         self.assertRedirects(response, reverse('landing:index'))
 
 
-@skip
-class OrderModelTest(TestCase):
-    def setUp(self):
-        self.pdf_file_name = "test_guide.pdf"
-        self.pdf = SimpleUploadedFile(
-            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
-        delete_file(self.pdf_file_name)
-
-    def tearDown(self):
-        delete_file(self.pdf_file_name)
-
-    def test_order_model_exists(self):
-        order_count = Order.objects.count()
-
-        self.assertEqual(order_count, 0)
-
-    def test_create_order(self):
-        username = "User"
-        password = "Foo"
-        user = User.objects.create_user(username=username, password=password)
-
-        price = 5
-        guide = create_guide(title="Some Guide",
-                             price=price, guide_pdf=self.pdf)
-
-        order = Order.create_order(
-            guide=guide, price=guide.current_price, user=user)
-
-        order_count = Order.objects.count()
-        self.assertTrue(isinstance(order, Order))
-        self.assertEqual(order_count, 1)
-        self.assertEqual(order, Order.objects.first())
-
-        self.assertEqual(order.guide, guide)
-        self.assertEqual(order.price, price)
-        self.assertEqual(order.user, user)
+# @skip
+# class OrderModelTest(TestCase):
+#     def setUp(self):
+#         self.pdf_file_name = "test_guide.pdf"
+#         self.pdf = SimpleUploadedFile(
+#             name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+#         delete_file(self.pdf_file_name)
+# 
+#     def tearDown(self):
+#         delete_file(self.pdf_file_name)
+# 
+#     def test_order_model_exists(self):
+#         order_count = Order.objects.count()
+# 
+#         self.assertEqual(order_count, 0)
+# 
+#     def test_create_order(self):
+#         username = "User"
+#         password = "Foo"
+#         user = User.objects.create_user(username=username, password=password)
+# 
+#         price = 5
+#         guide = create_guide(title="Some Guide",
+#                              price=price, guide_pdf=self.pdf)
+# 
+#         order = Order.create_order(
+#             guide=guide, price=guide.current_price, user=user)
+# 
+#         order_count = Order.objects.count()
+#         self.assertTrue(isinstance(order, Order))
+#         self.assertEqual(order_count, 1)
+#         self.assertEqual(order, Order.objects.first())
+# 
+#         self.assertEqual(order.guide, guide)
+#         self.assertEqual(order.price, price)
+#         self.assertEqual(order.user, user)
 
 
 class PaymentSuccessPageTest(TestCase):

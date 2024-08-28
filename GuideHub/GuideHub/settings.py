@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'landing',
     'blog',
     'guide',
+    'payment',
 
     'taggit',
 ]

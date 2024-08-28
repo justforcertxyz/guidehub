@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404, reverse, redirect
 from django.views.generic.list import ListView
-from .models import Guide, Order
+from .models import Guide
+from payment.models import Order
 from django.views.generic.detail import DetailView
 from django.http import FileResponse, HttpResponseRedirect, Http404, HttpResponse
 from django.contrib.auth import get_user_model
