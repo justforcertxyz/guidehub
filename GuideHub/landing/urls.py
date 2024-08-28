@@ -11,5 +11,4 @@ urlpatterns = [
     path("abmelden", views.LogoutUserView.as_view(), name="logout"),
     path("registrieren/", views.RegisterUserView.as_view(), name="register"),
     path("dashboard/", views.DashboardView.as_view(), name="dashboard"),
-    path("webhook/", views.stripe_webhook_view, name="stripe-webhook"),
 ]

@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include("landing.urls")),
     path('blog/', include("blog.urls")),
     path('guides/', include("guide.urls")),
+    path('payment/', include("payment.urls")),
 ]
 
 if settings.DEBUG:
