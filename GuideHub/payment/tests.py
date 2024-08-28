@@ -115,3 +115,7 @@ class CheckoutPageTest(TestCase):
     def test_checkout_page_returns_corrent_content(self):
         response = self.client.get(self.checkout_url + self.query_string)
         self.assertContains(response, "<title>Checkout")
+        self.assertContains(response, '<form')
+        self.assertContains(response, '<button')
+        self.assertContains(response, f'href="{self.checkout_url + self.query_string}"')
+        self.assertContains(response, 'csrfmiddlewaretoken')

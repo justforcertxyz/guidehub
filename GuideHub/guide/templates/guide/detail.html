@@ -42,13 +42,7 @@
                 </div>
                 <div class="guide-info-misc-row-link">
                     <div class="guide-info-misc-item">
-                        <!--<a href="#">Kaufen</a>-->
-                        <form enctype="multipart/form-data" method="post">
-                            {% csrf_token %}
-                            <button type="submit" method="post" class="btn" href="{% url 'guide:detail' object.slug %}">
-                                Kaufen
-                            </button>
-                        </from>
+                        <a href="{% url 'payment:checkout' %}?guide={{ object.slug }}">Kaufen</a>
                     </div>
                     <div class="guide-info-misc-item">
                         <a href="{% url 'guide:download' object.slug %}">Download</a>

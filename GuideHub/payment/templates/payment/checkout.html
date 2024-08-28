@@ -5,4 +5,10 @@
 
 {% block content %}
 <h1>Coming soon ...</h1>
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    <button type="submit" method="post" class="btn" href="{% url 'payment:checkout' %}?guide={{ guide.slug }}">
+        Bezahlen
+    </button>
+</from>
 {% endblock content %}
