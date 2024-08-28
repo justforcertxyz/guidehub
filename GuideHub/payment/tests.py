@@ -1,10 +1,12 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 import os
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 from .models import Order
 from django.contrib.auth import get_user_model
 from guide.models import Guide
+from django.urls import reverse
+from unittest import skip
 
 User = get_user_model()
 
@@ -67,3 +69,49 @@ class OrderModelTest(TestCase):
         self.assertEqual(order.price, price)
         self.assertEqual(order.user, user)
         self.assertEqual(order.stripe_checkout_id, checkout_id)
+
+
+class CheckoutPageTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        username = "User"
+        password = "foo"
+        self.user = User.objects.create_user(
+            username=username, password=password)
+        self.logged_in = self.client.login(
+            username=username, password=password)
+        self.dashboard_url = reverse('landing:dashboard')
+        self.checkout_url = reverse('payment:checkout')
+        self.pdf_file_name = "test_guide.pdf"
+        self.pdf = SimpleUploadedFile(
+            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+
+        delete_file(self.pdf_file_name)
+
+        self.guide = create_guide(title="Some Guide", guide_pdf=self.pdf)
+        self.query_string = f"?guide={self.guide.slug}"
+
+    def tearDown(self):
+        delete_file(self.pdf_file_name)
+
+    def test_checkout_page_returns_correct_response(self):
+        self.assertTrue(self.logged_in)
+        response = self.client.get(self.checkout_url + self.query_string)
+        self.assertTemplateUsed(response, 'payment/checkout.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(
+            self.checkout_url + "?guide=this_should_fail")
+        self.assertEqual(response.status_code, 404)
+
+        self.logged_in = self.client.logout()
+        self.assertFalse(self.logged_in)
+        response = self.client.get(self.checkout_url + self.query_string)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse(
+            "landing:login") + "?next=" + self.checkout_url + self.query_string)
+
+    def test_checkout_page_returns_corrent_content(self):
+        response = self.client.get(self.checkout_url + self.query_string)
+        self.assertContains(response, "<title>Checkout")
