@@ -58,6 +58,7 @@ import stripe
 from django.views.decorators.csrf import csrf_exempt
 import time
 from django.http import HttpResponse
+from guide.models import Order
 
 @csrf_exempt
 def stripe_webhook_view(request):
@@ -85,6 +86,7 @@ def stripe_webhook_view(request):
         session_id = session.get('id', None)
         print(f"{session=}")
         line_items = stripe.checkout.Session.list_line_items(session_id)
-        print(f"{line_items=}")
+        order = Order.objects.get(stripe_checkout_id=session_id)
+        print(f"{order.user=}")
 
     return HttpResponse(status=200)

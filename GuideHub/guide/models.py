@@ -127,8 +127,9 @@ class Order(models.Model):
     guide = models.ForeignKey(
         Guide, verbose_name="Guide ordered", on_delete=models.CASCADE)
     stripe_checkout_id = models.CharField(
-        "Stripe Checkout ID", max_length=50, blank=True)
+        "Stripe Checkout ID", max_length=50)
+    payment_complete = models.BooleanField("Paymant Complete", default=False)
 
     @classmethod
-    def create_order(cls, guide, price, user):
-        return Order.objects.create(guide=guide, price=price, user=user)
+    def create_order(cls, guide, price, user, stripe_checkout_id):
+        return Order.objects.create(guide=guide, price=price, user=user, stripe_checkout_id=stripe_checkout_id)
