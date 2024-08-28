@@ -117,5 +117,5 @@ class CheckoutPageTest(TestCase):
         self.assertContains(response, "<title>Checkout")
         self.assertContains(response, '<form')
         self.assertContains(response, '<button')
-        self.assertContains(response, f'href="{self.checkout_url + self.query_string}"')
+        self.assertContains(response, f' href="{self.checkout_url + self.query_string}"')
         self.assertContains(response, 'csrfmiddlewaretoken')
