@@ -29,7 +29,20 @@ def stripe_webhook_view(request):
     if (event['type'] == 'checkout.session.completed'
             or event['type'] == 'checkout.session.async_payment_succeeded'):
         session = event['data']['object']
-        session_id = session.get('id', None)
-        line_items = stripe.checkout.Session.list_line_items(session_id)
+        _fullfill_checkout(session)
 
     return HttpResponse(status=200)
+
+
+def _fullfill_checkout(session):
+    if session.payment_status != 'unpaid':
+        session_id = session.get('id', None)
+        line_items = stripe.checkout.Session.list_line_items(session_id)
+        order = Order.objects.get(stripe_checkout_id=session_id)
+        order.payment_complete = True
+        order.price = line_items["data"][0]["amount_total"]/100
+        
+        order.guide.add_owner(order.user)
+
+        order.save()
+        print(f"{order.price}")
