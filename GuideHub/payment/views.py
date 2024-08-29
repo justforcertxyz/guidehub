@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.conf import settings
 import stripe
 from django.views.decorators.csrf import csrf_exempt
@@ -98,7 +98,6 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
         # TODO: What if inactive -> Shouldnt be shown at all
         if guide.is_active:
             try:
-                # TODO: succes and cancel urls
                 checkout_session = stripe.checkout.Session.create(line_items=[{"price": guide.stripe_price_id,
                                                                                "quantity": 1}],
                                                                   mode='payment',
@@ -106,11 +105,10 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
                                                                       "enabled": True},
                                                                   automatic_tax={
                                                                       "enabled": True},
-                                                                  # success_url=f"{
-                                                                  #     reverse('guide:payment-success')}",
-                                                                  # cancel_url=f"{reverse('guide:payment-failed')}")
-                                                                  success_url="http://127.0.0.1:8000/payment/erfolgreich",
-                                                                  cancel_url="http://127.0.0.1:8000/payment/abgebrochen")
+                                                                  success_url=settings.BASE_URL +
+                                                                  reverse(
+                                                                      'payment:payment-success') + "?guide=" + guide.slug,
+                                                                  cancel_url=settings.BASE_URL + reverse('payment:payment-failed'),)
                 order = Order.create_order(
                     guide, guide.current_price, request.user, stripe_checkout_id=checkout_session["id"])
 
