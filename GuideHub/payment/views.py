@@ -85,6 +85,7 @@ class CheckoutView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         context["guide"] = get_object_or_404(
             Guide, slug=self.request.GET.get('guide'))
+        context["owned"] = context["guide"].is_owned(self.request.user)
         return context
 
     def get(self, request, *args, **kwargs):

@@ -5,6 +5,9 @@
 
 {% block content %}
 <h1>Coming soon ...</h1>
+{% if owned %}
+<h2>Der Guide is bereits in deiner Bibliothek!</h2>
+{% endif %}
 <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
     <button type="submit" method="post" class="btn" href="{% url 'payment:checkout' %}?guide={{ guide.slug }}">

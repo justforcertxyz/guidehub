@@ -119,6 +119,12 @@ class CheckoutPageTest(TestCase):
         self.assertContains(response,
                             f' href="{self.checkout_url + self.query_string}"')
         self.assertContains(response, 'csrfmiddlewaretoken')
+        self.assertNotContains(response, "bereits")
+
+        self.guide.add_owner(self.user)
+        self.assertTrue(self.guide.is_owned(self.user))
+        response = self.client.get(self.checkout_url + self.query_string)
+        self.assertContains(response, "bereits")
 
     @skip
     def test_checkout_page_returns_correct_response_POST(self):
