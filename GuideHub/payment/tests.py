@@ -160,7 +160,17 @@ class PaymentSuccesPageTest(TestCase):
     def test_payment_success_page_return_correct_response(self):
         self.assertTrue(self.logged_in)
 
-        response = self.client.get(self.payment_url)
+        response = self.client.get(self.payment_url + self.query_string)
+        self.assertEqual(response.status_code, 404)
+
+        response = self.client.get(
+            self.payment_url + "?guide=this_should_fail")
+        self.assertEqual(response.status_code, 404)
+
+        self.guide.add_owner(self.user)
+
+        self.assertTrue(self.guide.is_owned(self.user))
+        response = self.client.get(self.payment_url + self.query_string)
         self.assertTemplateUsed(response, 'payment/payment_success.html')
         self.assertTemplateUsed(response, 'landing/base.html')
         self.assertEqual(response.status_code, 200)
@@ -173,8 +183,11 @@ class PaymentSuccesPageTest(TestCase):
             'landing:login') + "?next=" + self.payment_url)
 
     def test_payment_success_page_returns_correct_content(self):
-        response = self.client.get(self.payment_url)
+        self.guide.add_owner(self.user)
+        response = self.client.get(self.payment_url + self.query_string)
         self.assertContains(response, "<title>Erfolgreich")
+        self.assertContains(response, reverse('guide:detail', kwargs={'slug': self.guide.slug}))
+        self.assertContains(response, reverse('guide:download', kwargs={'slug': self.guide.slug}))
 
 
 class PaymentFailedPageTest(TestCase):

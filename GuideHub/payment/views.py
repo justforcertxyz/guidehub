@@ -57,11 +57,26 @@ class PaymentFailedView(LoginRequiredMixin, TemplateView):
     login_url = "landing:login"
 
 
+# TODO: get and get_context data both do queries which is not good
 class PaymentSuccessView(LoginRequiredMixin, TemplateView):
     template_name = "payment/payment_success.html"
     login_url = "landing:login"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["guide"] = self.guide
+        return context
 
+    def get(self, request, *args, **kwargs):
+        self.guide = get_object_or_404(
+            Guide, slug=self.request.GET.get('guide'))
+        if not self.guide.is_owned(request.user):
+            raise Http404
+
+        return super().get(request, *args, **kwargs)
+
+
+# TODO: post and get_context data both do queries which is not good
 class CheckoutView(LoginRequiredMixin, TemplateView):
     template_name = "payment/checkout.html"
     login_url = "landing:login"

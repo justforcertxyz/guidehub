@@ -3,5 +3,7 @@
 {% block title %}Erfolgreich{% endblock %}
 
 {% block content %}
-<h1>Der Kauf war erfolgriech</h1>
+<h1>Der Kauf war erfolgriech! Vielen Dank!</h1>
+<p><a href="{% url 'guide:detail' guide.slug %}">Zum Guide</a></p>
+<p><a href="{% url 'guide:download' guide.slug %}">Download</a></p>
 {% endblock %}
