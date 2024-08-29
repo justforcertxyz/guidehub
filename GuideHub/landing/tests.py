@@ -259,23 +259,36 @@ class DashboardPageTest(TestCase):
         self.assertRedirects(response, f"{self.login_url}?next=/dashboard/")
 
     def test_page_return_correct_content(self):
-        guide1 = create_guide(title="Some Guide", author=self.user, price=10)
+        name1 = "some_guide.pdf"
+        pdf1 = SimpleUploadedFile(
+            name=name1, content=b'Test guide', content_type="text/pdf")
+        guide1 = create_guide(title="Some Guide",
+                              author=self.user, price=10, guide_pdf=pdf1)
         response = self.client.get(self.dashboard_url)
         self.assertEqual(response.context['guides_owned'][0], guide1)
         self.assertEqual(response.context['guides_written'][0], guide1)
 
+        name2 = "another_guide.pdf"
+        pdf2 = SimpleUploadedFile(
+            name=name2, content=b'Test guide', content_type="text/pdf")
         guide2 = create_guide(title="Another Guide",
-                              slug="another_guide", author=self.user, price=5)
+                              slug="another_guide", author=self.user, price=5, guide_pdf=pdf2)
         response = self.client.get(self.dashboard_url)
         self.assertEqual(response.context['guides_owned'][0], guide2)
         self.assertEqual(response.context['guides_written'][0], guide2)
         self.assertEqual(response.context['guides_owned'][1], guide1)
         self.assertEqual(response.context['guides_written'][1], guide1)
 
+        name3 = "another_other_guide.pdf"
+        pdf3 = SimpleUploadedFile(
+            name=name3, content=b'Test guide', content_type="text/pdf")
         guide3 = create_guide(title="Another other Guide",
-                              slug="another_other_guide", author=self.user, price=15)
+                              slug="another_other_guide", author=self.user, price=15, guide_pdf=pdf3)
+        name4 = "cheaper_guide.pdf"
+        pdf4 = SimpleUploadedFile(
+            name=name4, content=b'Test guide', content_type="text/pdf")
         guide4 = create_guide(title="Cheaper Guide",
-                              slug="cheaper_guide", author=self.user, price=9.5)
+                              slug="cheaper_guide", author=self.user, price=9.5, guide_pdf=pdf4)
 
         response = self.client.get(self.dashboard_url)
         self.assertEqual(response.context['guides_owned'][0], guide2)
@@ -284,3 +297,9 @@ class DashboardPageTest(TestCase):
         self.assertEqual(response.context['guides_written'][1], guide4)
         self.assertEqual(response.context['guides_owned'][2], guide1)
         self.assertEqual(response.context['guides_written'][2], guide1)
+
+        delete_file(name1)
+        delete_file(name2)
+        delete_file(name3)
+        delete_file(name4)
+
