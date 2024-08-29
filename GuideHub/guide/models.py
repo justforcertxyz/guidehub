@@ -66,7 +66,7 @@ class Guide(models.Model):
             return False
 
     @classmethod
-    def create_guide(cls, title, slug, description, pages, current_price, author: User, guide_pdf, tags=""):
+    def create_guide(cls, title, slug, description, pages, current_price, author: User, guide_pdf, tags="", language="deutsch"):
         guide = Guide.objects.create(title=title[:49], slug=slug,
                                      description=description, pages=pages, current_price=current_price,
                                      price_history=[
@@ -74,6 +74,7 @@ class Guide(models.Model):
                                      author=author,
                                      guide_pdf=guide_pdf,
                                      tags=tags,
+                                     language=language,
                                      )
         guide.add_owner(author)
         if User.objects.filter(is_superuser=True).count() > 0:

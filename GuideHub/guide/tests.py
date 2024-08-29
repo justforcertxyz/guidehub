@@ -11,7 +11,7 @@ from unittest import skip
 User = get_user_model()
 
 
-def create_guide(title, slug="some_slug", description="description", price=5, pages=1, author="", guide_pdf="", tags=""):
+def create_guide(title, slug="some_slug", description="description", price=5, pages=1, author="", guide_pdf="", tags="", language="deutsch"):
     if author == "":
         author = User.objects.create_user(username="Name", password="Foo")
 
@@ -47,7 +47,6 @@ class GuideModelTest(TestCase):
 
         self.assertEqual(guide_count, 0)
 
-    @skip
     def test_create_guide(self):
         title = "This is a Guide"
         slug = "this_is_a_guide"
@@ -57,11 +56,13 @@ class GuideModelTest(TestCase):
         author = User.objects.create_user(
             username="Author Name", password="Foo")
         tags = 'Test, Apfel'
+        language = "english"
         su1 = User.objects.create_superuser(username="su1", password="Foo")
         su2 = User.objects.create_superuser(username="su2", password="Foo")
         user = User.objects.create_user(username="Normal User", password="Foo")
         guide = Guide.create_guide(title=title, slug=slug, description=description,
-                                   pages=pages, current_price=price, author=author, guide_pdf=self.pdf, tags=tags)
+                                   pages=pages, current_price=price, author=author,
+                                   guide_pdf=self.pdf, tags=tags, language=language)
 
         guide_count = Guide.objects.count()
         self.assertTrue(isinstance(guide, Guide))
@@ -78,13 +79,13 @@ class GuideModelTest(TestCase):
         self.assertEqual(guide.guide_pdf.name, self.pdf.name)
         self.assertNotEqual(guide.guide_pdf.size, 0)
         self.assertEqual(guide.tags, tags)
+        self.assertEqual(guide.language, language)
 
         self.assertEqual(guide.owned_by.get_queryset().count(), 3)
         self.assertTrue(guide.is_owned(su2))
         self.assertTrue(guide.is_owned(author))
         self.assertFalse(guide.is_owned(user))
 
-    @skip
     def test___str__(self):
         title = "Some Title"
         guide = create_guide(title=title, guide_pdf=self.pdf)
