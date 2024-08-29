@@ -302,4 +302,3 @@ class DashboardPageTest(TestCase):
         delete_file(name2)
         delete_file(name3)
         delete_file(name4)
-
