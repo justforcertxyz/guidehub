@@ -57,7 +57,6 @@ class PaymentFailedView(LoginRequiredMixin, TemplateView):
     login_url = "landing:login"
 
 
-# TODO: get and get_context data both do queries which is not good
 class PaymentSuccessView(LoginRequiredMixin, TemplateView):
     template_name = "payment/payment_success.html"
     login_url = "landing:login"
