@@ -7,24 +7,9 @@ from guide.models import Guide
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 import os
+from guide.tests import create_guide
 
 User = get_user_model()
-
-
-def create_guide(title, slug="some_slug", description="description", price=0, pages=1, author="", guide_pdf="", tags=""):
-    if author == "":
-        author = User.objects.create_user(username="Name", password="Foo")
-
-    if guide_pdf == "":
-        guide_pdf = SimpleUploadedFile(
-            name="test_guide.pdf", content=b'Test guide', content_type="text/pdf")
-
-    return Guide.create_guide(title=title, slug=slug,
-                              description=description, current_price=price, pages=pages,
-                              author=author,
-                              guide_pdf=guide_pdf,
-                              tags=tags,
-                              )
 
 
 def delete_file(file_name):
