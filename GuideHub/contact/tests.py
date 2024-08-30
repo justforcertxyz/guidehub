@@ -1,6 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import Inquiry
 from .forms import CreateInquiryForm
+from django.urls import reverse
+from unittest import skip
 
 
 def create_inquiry(subject, email="some@email.com", text="Some inquiry text"):
@@ -44,6 +46,7 @@ class InquiryModelTest(TestCase):
 
         self.assertTrue(Inquiry.objects.first().processed)
 
+
 class CreateInquiryFormTest(TestCase):
     def setUp(self):
         self.form = CreateInquiryForm
@@ -62,3 +65,45 @@ class CreateInquiryFormTest(TestCase):
         })
 
         self.assertTrue(form.is_valid())
+
+
+class CreateInquiryViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.contact_url = reverse('contact:index')
+        self.success_url = reverse('landing:index')
+
+    def test_create_inquiry_page_returns_correct_response(self):
+        response = self.client.get(self.contact_url)
+        self.assertTemplateUsed(response, 'contact/index.html')
+        self.assertTemplateUsed(response, 'landing/base.html')
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_inquiry_page_returns_correct_response_POST(self):
+        inquiry_count = Inquiry.objects.count()
+        self.assertEqual(inquiry_count, 0)
+
+        response = self.client.post(self.contact_url, {
+            'email': 'some@mail.de',
+            'subject': 'Subject',
+            'text': 'text',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, self.success_url)
+
+        inquiry_count = Inquiry.objects.count()
+        self.assertEqual(inquiry_count, 1)
+
+    def test_create_inquiry_page_correct_content(self):
+        response = self.client.get(self.contact_url)
+
+        self.assertContains(response, '<form')
+        self.assertContains(response, 'csrfmiddlewaretoken')
+        self.assertContains(response, '<label for')
+        self.assertContains(response, '<input type="submit"')
+        self.assertContains(response, "<title>Kontakt")
+
+        self.assertContains(response, "E-Mail-Adresse:</label>")
+        self.assertContains(response, "Betreff:</label>")
+        self.assertContains(response, "Anfragentext:</label>")

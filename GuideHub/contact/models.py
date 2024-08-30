@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 
+# TODO: Move from model to email
+
 
 class Inquiry(models.Model):
     pub_date = models.DateTimeField("Date Published", default=timezone.now)
