@@ -65,6 +65,7 @@ class Guide(models.Model):
         except:
             return False
 
+    # TODO: Thumbnail
     @classmethod
     def create_guide(cls, title, slug, description, pages, current_price, author: User, guide_pdf, tags="", language="deutsch"):
         guide = Guide.objects.create(title=title[:49], slug=slug,
@@ -84,32 +85,23 @@ class Guide(models.Model):
 
         return guide
 
-    def place_order(self, user) -> bool:
-        Order.create_order(self, self.current_price, user)
-        return True
-
     def amount_orders(self):
         return self.order_set.count()
 
-    # TODO: Only activate if not laready active
-    def activate(self):
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-        product = stripe.Product.create(name=self.title)
-        self.stripe_product_id = product['id']
+    # TODO: Only activate if not allready active
+    # TODO: Error handling for API requests
+    def activate(self) -> bool:
+        if not self.is_active:
+            stripe.api_key = settings.STRIPE_SECRET_KEY
+            product = stripe.Product.create(name=self.title)
+            self.stripe_product_id = product['id']
 
-        price = stripe.Price.create(
-            currency="eur", unit_amount=int(self.current_price*100), product=self.stripe_product_id)
-        self.stripe_price_id = price['id']
+            price = stripe.Price.create(
+                currency="eur", unit_amount=int(self.current_price*100), product=self.stripe_product_id)
+            self.stripe_price_id = price['id']
 
-        # payment_link = stripe.PaymentLink.create(
-        #     line_items=[{"price": self.stripe_price_id, "quantity": 1}],
-        #     invoice_creation={"enabled": True},
-        #     automatic_tax={"enabled": True})
-
-        # self.stripe_payment_link_id = payment_link['id']
-        # self.stripe_url = payment_link['url']
-
-        # print(f"{self.stripe_url=}")
-
-        self.is_active = True
-        self.save()
+            self.is_active = True
+            self.save()
+            return True
+        else:
+            return False

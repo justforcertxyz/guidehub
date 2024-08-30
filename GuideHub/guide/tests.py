@@ -7,6 +7,7 @@ import os
 from django.utils import timezone
 from django.urls import reverse
 from unittest import skip
+from payment.models import Order
 
 User = get_user_model()
 
@@ -36,7 +37,7 @@ class GuideModelTest(TestCase):
     def setUp(self):
         self.pdf_file_name = "test_guide.pdf"
         self.pdf = SimpleUploadedFile(
-            name=self.pdf_file_name, content=b'Test guide', content_type="text/pdf")
+            name=self.pdf_file_name, content=b'Test guide', content_type="application/pdf")
         delete_file(self.pdf_file_name)
 
     def tearDown(self):
@@ -91,7 +92,6 @@ class GuideModelTest(TestCase):
         guide = create_guide(title=title, guide_pdf=self.pdf)
         self.assertEqual(str(guide), title)
 
-    @skip
     def test_add_owner(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         username = "User"
@@ -100,7 +100,6 @@ class GuideModelTest(TestCase):
         guide.add_owner(user)
         self.assertEqual(guide.owned_by.get_queryset().count(), 2)
 
-    @skip
     def test_is_owned(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
 
@@ -113,7 +112,6 @@ class GuideModelTest(TestCase):
 
         self.assertTrue(guide.is_owned(user))
 
-    @skip
     def test_set_price(self):
         author = User.objects.create_user(username="Name", password="Foo")
         price = 4.5
@@ -144,31 +142,31 @@ class GuideModelTest(TestCase):
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertTrue(f'{new_price}' in guide.price_history[1])
 
-    @skip
     # TODO: Add image to test
     def test_has_thumbnail(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         self.assertFalse(guide.has_thumbnail())
+        delete_file(self.pdf_file_name)
+        guide.delete()
+        img_name = "test_img.png"
+        img = SimpleUploadedFile(
+            name=img_name,
+            content=b'Test Image',
+            content_type='image/png',
+        )
 
-    @skip
-    def test_place_order(self):
-        guide = create_guide(title="Some Title", guide_pdf=self.pdf)
+        guide = Guide.objects.create(title="Some Guide", slug="some_slug",
+                                     description="", current_price=12, pages=1,
+                                     price_history=[[]],
+                                     author=User.objects.first(),
+                                     guide_pdf=self.pdf,
+                                     tags="",
+                                     thumbnail=img,
+                                     )
+        self.assertTrue(guide.has_thumbnail())
+        file = settings.MEDIA_ROOT / "img" / img_name
+        os.system(f"test -f {file} && rm {file}")
 
-        username = "User"
-        password = "Foo"
-        user = User.objects.create_user(username=username, password=password)
-
-        order_placed = guide.place_order(user)
-        self.assertTrue(order_placed)
-        order_count = Order.objects.count()
-        self.assertEqual(order_count, 1)
-
-        order = Order.objects.first()
-        self.assertEqual(order.guide, guide)
-        self.assertEqual(order.price, guide.current_price)
-        self.assertEqual(order.user, user)
-
-    @skip
     def test_amount_orders(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
 
@@ -178,26 +176,30 @@ class GuideModelTest(TestCase):
         password = "Foo"
         user = User.objects.create_user(username=username, password=password)
 
-        guide.place_order(user)
+        Order.create_order(guide, guide.current_price, user, "asdas1324412")
         self.assertEqual(guide.amount_orders(), 1)
 
         username = "Resu"
         password = "Foo"
         user = User.objects.create_user(username=username, password=password)
 
-        guide.place_order(user)
+        Order.create_order(guide, guide.current_price, user, "as13asd12")
         self.assertEqual(guide.amount_orders(), 2)
 
-    @skip
-    def test_is_active(self):
+    # TODO: Test correct api requests
+    def test_active(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         self.assertFalse(guide.is_active)
 
-        guide.activate()
+        activated = guide.activate()
         self.assertTrue(guide.is_active)
+        self.assertTrue(activated)
+
+        activated = guide.activate()
+        self.assertTrue(guide.is_active)
+        self.assertFalse(activated)
 
 
-@skip
 class IndexPageTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -214,7 +216,6 @@ class IndexPageTest(TestCase):
         self.assertContains(response, "<title>Guides")
 
 
-@skip
 class DetailPageTest(TestCase):
     def setUp(self):
         self.client = Client()
@@ -238,7 +239,6 @@ class DetailPageTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
-@skip
 class DownloadPageTest(TestCase):
     def setUp(self):
         self.client = Client()
