@@ -1,9 +1,11 @@
 from django.test import TestCase
 from .models import Inquiry
+from .forms import CreateInquiryForm
 
 
 def create_inquiry(subject, email="some@email.com", text="Some inquiry text"):
     return Inquiry.create_inquiry(subject=subject, email=email, text=text)
+
 
 class InquiryModelTest(TestCase):
     def test_inquiry_model_exists(self):
@@ -41,3 +43,22 @@ class InquiryModelTest(TestCase):
         inquiry.finish_processing()
 
         self.assertTrue(Inquiry.objects.first().processed)
+
+class CreateInquiryFormTest(TestCase):
+    def setUp(self):
+        self.form = CreateInquiryForm
+
+    def test_form_valid(self):
+        self.assertTrue(issubclass(self.form, CreateInquiryForm))
+
+        self.assertTrue('email' in self.form.Meta.fields)
+        self.assertTrue('subject' in self.form.Meta.fields)
+        self.assertTrue('text' in self.form.Meta.fields)
+
+        form = self.form({
+            'email': "some@mail.de",
+            "subject": "subject",
+            "text": "Text",
+        })
+
+        self.assertTrue(form.is_valid())
