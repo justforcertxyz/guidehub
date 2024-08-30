@@ -8,6 +8,8 @@ class Inquiry(models.Model):
     subject = models.CharField("Inquiry Subject", max_length=50)
     text = models.TextField("Inquiry Text", max_length=2500)
 
+    processed = models.BooleanField("Inquiry Processed", default=False)
+
     @classmethod
     def create_inquiry(cls, email, subject, text):
         return Inquiry.objects.create(email=email, subject=subject, text=text)

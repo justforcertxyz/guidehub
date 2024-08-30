@@ -27,6 +27,7 @@ class InquiryModelTest(TestCase):
         self.assertEqual(inquiry.email, email)
         self.assertEqual(inquiry.subject, subject)
         self.assertEqual(inquiry.text, text)
+        self.assertFalse(inquiry.processed)
 
     def test___str__(self):
         subject = "Very Important Inquiry"
