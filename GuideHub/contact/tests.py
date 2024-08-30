@@ -2,6 +2,9 @@ from django.test import TestCase
 from .models import Inquiry
 
 
+def create_inquiry(subject, email="some@email.com", text="Some inquiry text"):
+    return Inquiry.create_inquiry(subject=subject, email=email, text=text)
+
 class InquiryModelTest(TestCase):
     def test_inquiry_model_exists(self):
         inquiry_count = Inquiry.objects.count()
@@ -24,3 +27,8 @@ class InquiryModelTest(TestCase):
         self.assertEqual(inquiry.email, email)
         self.assertEqual(inquiry.subject, subject)
         self.assertEqual(inquiry.text, text)
+
+    def test___str__(self):
+        subject = "Very Important Inquiry"
+        inquiry = create_inquiry(subject=subject)
+        self.assertEqual(str(inquiry), subject)

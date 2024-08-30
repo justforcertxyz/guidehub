@@ -11,3 +11,8 @@ class Inquiry(models.Model):
     @classmethod
     def create_inquiry(cls, email, subject, text):
         return Inquiry.objects.create(email=email, subject=subject, text=text)
+
+
+    def __str__(self):
+        return self.subject
+    
