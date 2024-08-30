@@ -88,7 +88,6 @@ class Guide(models.Model):
     def amount_orders(self):
         return self.order_set.count()
 
-    # TODO: Only activate if not allready active
     # TODO: Error handling for API requests
     def activate(self) -> bool:
         if not self.is_active:
