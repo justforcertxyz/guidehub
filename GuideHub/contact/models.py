@@ -14,7 +14,9 @@ class Inquiry(models.Model):
     def create_inquiry(cls, email, subject, text):
         return Inquiry.objects.create(email=email, subject=subject, text=text)
 
-
     def __str__(self):
         return self.subject
-    
+
+    def finish_processing(self):
+        self.processed = True
+        self.save()

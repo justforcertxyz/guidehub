@@ -33,3 +33,11 @@ class InquiryModelTest(TestCase):
         subject = "Very Important Inquiry"
         inquiry = create_inquiry(subject=subject)
         self.assertEqual(str(inquiry), subject)
+
+    def test_finish_processing(self):
+        inquiry = create_inquiry("Very Important")
+        self.assertFalse(inquiry.processed)
+
+        inquiry.finish_processing()
+
+        self.assertTrue(Inquiry.objects.first().processed)
