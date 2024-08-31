@@ -142,7 +142,6 @@ class GuideModelTest(TestCase):
         self.assertTrue(f'{price}' in guide.price_history[0])
         self.assertTrue(f'{new_price}' in guide.price_history[1])
 
-    # TODO: Add image to test
     def test_has_thumbnail(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         self.assertFalse(guide.has_thumbnail())
@@ -186,7 +185,6 @@ class GuideModelTest(TestCase):
         Order.create_order(guide, guide.current_price, user, "as13asd12")
         self.assertEqual(guide.amount_orders(), 2)
 
-    # TODO: Test correct api requests
     def test_active(self):
         guide = create_guide(title="Some Title", guide_pdf=self.pdf)
         self.assertFalse(guide.is_active)
