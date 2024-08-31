@@ -6,6 +6,7 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
 import stripe
+from django.http import Http404
 
 pdf_storage = FileSystemStorage(location=settings.GUIDE_PDF_ROOT)
 User = get_user_model()
@@ -92,12 +93,67 @@ class Guide(models.Model):
     def activate(self) -> bool:
         if not self.is_active:
             stripe.api_key = settings.STRIPE_SECRET_KEY
-            product = stripe.Product.create(name=self.title)
-            self.stripe_product_id = product['id']
 
-            price = stripe.Price.create(
-                currency="eur", unit_amount=int(self.current_price*100), product=self.stripe_product_id)
-            self.stripe_price_id = price['id']
+            try:
+                product = stripe.Product.create(name=self.title)
+                self.stripe_product_id = product['id']
+            except stripe.error.RateLimitError as e:
+                # Too many requests made to the API too quickly
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.InvalidRequestError as e:
+                # Invalid parameters were supplied to Stripe's API
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.AuthenticationError as e:
+                # Authentication with Stripe's API failed
+                # (maybe you changed API keys recently)
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.APIConnectionError as e:
+                # Network communication with Stripe failed
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.StripeError as e:
+                # Display a very generic error to the user, and maybe send
+                # yourself an email
+                print(f"Exception: {e}")
+                raise Http404
+            except Exception as e:
+                # Something else happened, completely unrelated to Stripe
+                print(f"Exception: {e}")
+                raise Http404
+
+            try:
+                price = stripe.Price.create(
+                    currency="eur", unit_amount=int(self.current_price*100), product=self.stripe_product_id)
+                self.stripe_price_id = price['id']
+            except stripe.error.RateLimitError as e:
+                # Too many requests made to the API too quickly
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.InvalidRequestError as e:
+                # Invalid parameters were supplied to Stripe's API
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.AuthenticationError as e:
+                # Authentication with Stripe's API failed
+                # (maybe you changed API keys recently)
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.APIConnectionError as e:
+                # Network communication with Stripe failed
+                print(f"Exception: {e}")
+                raise Http404
+            except stripe.error.StripeError as e:
+                # Display a very generic error to the user, and maybe send
+                # yourself an email
+                print(f"Exception: {e}")
+                raise Http404
+            except Exception as e:
+                # Something else happened, completely unrelated to Stripe
+                print(f"Exception: {e}")
+                raise Http404
 
             self.is_active = True
             self.save()
